@@ -14,12 +14,12 @@ public partial class GameHub
     public static Dictionary<string, string> ConnectedUsers = new();
     public async Task Login(string nickname)
     {
-        if (ConnectedUsers.ContainsKey(nickname))
+        if (ConnectedUsers.ContainsValue(nickname))
         {
             await Clients.Caller.SendAsync("LoginResult",
                 JsonConvert.SerializeObject(new LoginResponse
                 {
-                    ErrorCode = "ALREADY_LOGGED_IN",
+                    ErrorCode = "error.alreadyLoggedIn",
                     Success = false
                 }));
         }
