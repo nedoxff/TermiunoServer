@@ -1,15 +1,11 @@
 ﻿namespace TermiunoServer.Models;
 
-public struct Room
+public class Room
 {
-    public string Name = "";
-    public string CreatorId = "";
-    public string Id;
-    public int MaxPlayers = 0;
-    public bool Playing;
+    public string Name = null!;
+    public string CreatorId = null!;
+    public string Id = null!;
+    public int MaxPlayers = -1;
+    public bool Playing = false;
     public Dictionary<string, string> Players = new();
-
-    public Room()
-    {
-    }
 }

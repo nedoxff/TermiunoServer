@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Serilog;
@@ -21,12 +22,22 @@ public partial class GameHub
             Id = Guid.NewGuid().ToString("N"),
             MaxPlayers = maxPlayers,
             Playing = false,
-            Name = name,
-            CreatorId = Context.UserIdentifier!
+            Name = string.IsNullOrEmpty(name) ? Guid.NewGuid().ToString("N"): name,
+            CreatorId = Context.UserIdentifier!,
+            Players = new Dictionary<string, string>
+            {
+                {Context.UserIdentifier!, ConnectedUsers[Context.UserIdentifier!]}
+            }
         };
         Log.Information("Created new room ({Id})", room.Id);
         Rooms.Add(room);
-        await Clients.All.SendAsync("RefreshRoomsList", JsonConvert.SerializeObject(Rooms, _camelCaseSettings));
+        await Clients.All.SendAsync("UIAddRoom", JsonConvert.SerializeObject(room, _camelCaseSettings));
+    }
+
+    private async Task RemoveRoom(Room room)
+    {
+        Rooms.Remove(room);
+        await Clients.All.SendAsync("UIRemoveRoom", JsonConvert.SerializeObject(room, _camelCaseSettings));
     }
 
     public async Task GetAndRefreshRooms() => await Clients.Caller.SendAsync("RefreshRoomsList", JsonConvert.SerializeObject(Rooms, _camelCaseSettings));
