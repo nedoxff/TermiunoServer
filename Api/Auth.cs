@@ -12,11 +12,11 @@ public partial class GameHub
         [JsonProperty("message")] public string? ErrorCode;
     }
     public static Dictionary<string, string> ConnectedUsers = new();
-    public async Task Login(string nickname)
+    public async Task TryLogin(string nickname)
     {
         if (ConnectedUsers.ContainsValue(nickname))
         {
-            await Clients.Caller.SendAsync("LoginResult",
+            await Clients.Caller.SendAsync("TryLoginResponse",
                 JsonConvert.SerializeObject(new LoginResponse
                 {
                     ErrorCode = "error.alreadyLoggedIn",
@@ -27,7 +27,7 @@ public partial class GameHub
         {
             Log.Information("New player connected ({Nickname}, {Id})", nickname, Context.UserIdentifier);
             ConnectedUsers[Context.UserIdentifier!] = nickname;
-            await Clients.Caller.SendAsync("LoginResult", JsonConvert.SerializeObject(new LoginResponse
+            await Clients.Caller.SendAsync("TryLoginResponse", JsonConvert.SerializeObject(new LoginResponse
             {
                 Success = true
             }));
